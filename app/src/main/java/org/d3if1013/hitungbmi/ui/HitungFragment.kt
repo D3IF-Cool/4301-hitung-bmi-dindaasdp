@@ -21,9 +21,6 @@ class HitungFragment : Fragment() {
     }
 
     private fun hitungBmi() {
-//        val berat = binding.beratEditText.text.toString().toFloat()
-//        val tinggi = binding.tinggiEditText.text.toString().toFloat() / 100
-//        val bmi = berat / (tinggi * tinggi)
 
         val berat = binding.beratEditText.text.toString()
         if (TextUtils.isEmpty(berat)) {
