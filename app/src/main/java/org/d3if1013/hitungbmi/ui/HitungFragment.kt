@@ -1,13 +1,13 @@
 package org.d3if1013.hitungbmi.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import org.d3if1013.hitungbmi.R
 import org.d3if1013.hitungbmi.data.KategoriBmi
 import org.d3if1013.hitungbmi.databinding.FragmentHitungBinding
@@ -21,7 +21,22 @@ class HitungFragment : Fragment() {
         binding = FragmentHitungBinding.inflate(layoutInflater, container, false)
         binding.button.setOnClickListener { hitungBmi() }
         binding.saranButton.setOnClickListener { view: View -> view.findNavController().navigate(HitungFragmentDirections.actionHitungFragmentToSaranFragment(kategoriBmi)) }
+        binding.shareButton.setOnClickListener { shareData() }
+        setHasOptionsMenu(true)
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.options_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.menu_about){
+            findNavController().navigate(R.id.action_hitungFragment_to_aboutFragment)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun hitungBmi() {
@@ -51,7 +66,23 @@ class HitungFragment : Fragment() {
 
         binding.bmiTextView.text = getString(R.string.bmi_x, bmi)
         binding.kategoriTextView.text = getString(R.string.kategori_x, kategori)
-        binding.saranButton.visibility = View.VISIBLE
+        binding.buttonGroup.visibility = View.VISIBLE
+    }
+
+    private fun shareData(){
+        val selectedId = binding.radioGroup.checkedRadioButtonId
+        val gender = if (selectedId == R.id.priaRadioButton)
+            getString(R.string.pria)
+        else
+            getString(R.string.wanita)
+
+        val message = getString(R.string.bagikan_template, binding.beratEditText.text, binding.tinggiEditText.text, gender, binding.bmiTextView.text, binding.kategoriTextView.text)
+
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.setType("text/plain").putExtra(Intent.EXTRA_TEXT, message)
+        if (shareIntent.resolveActivity(requireActivity().packageManager) != null){
+            startActivity(shareIntent)
+        }
     }
 
     private fun getKategori(bmi: Float, isMale: Boolean): String {
